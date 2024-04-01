@@ -13,12 +13,18 @@ public class PlatformControl : MonoBehaviour
 
     }
 
-    void Update()
+    void FixedUpdate()
     {
         if (gameObject.activeSelf)
         {
-            transform.Translate(Vector3.left * Time.deltaTime * GameManager.platformSpeed);
+            transform.Translate(Vector3.left * GameManager.platformSpeed * 0.01F);
         }
+    }
+
+    void Update()
+    {
+        //if (gameObject.activeSelf)
+        //    transform.Translate(Vector3.left * Time.deltaTime * GameManager.platformSpeed);
 
         if (transform.position.x < endPosition)
         {

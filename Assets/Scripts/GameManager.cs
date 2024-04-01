@@ -77,7 +77,7 @@ public class GameManager : MonoBehaviour
         SoundManager.Instance.playSound("gameOverSFX");
         UILevel.gameObject.SetActive(false);
         UIGameOver.gameObject.SetActive(true);
-        UIScore.gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector2(137.0F, 56.0F);
+        UIScore.gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector2(734.0F, -379.0F);
 
         Time.timeScale = 0.0F;
     }

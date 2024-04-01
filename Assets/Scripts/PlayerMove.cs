@@ -6,6 +6,8 @@ public class PlayerMove : MonoBehaviour
 {
     public float jumpPower;
     public GameObject particlePrefab;
+    bool isJumping;
+    bool canJump = false;
 
     Rigidbody2D rigid;
     Animator animator;
@@ -18,33 +20,46 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
-        JumpUpdate();
+        if (canJump)
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                isJumping = true;
+            }
+        }
     }
 
-    void JumpUpdate()
+    void FixedUpdate()
     {
         Debug.DrawRay(transform.position, Vector3.down * 5, new Color(0, 1, 0));
         RaycastHit2D rayHit = Physics2D.Raycast(transform.position, Vector3.down, 5, LayerMask.GetMask("Platform"));
 
         if (rayHit.collider)
         {
+            canJump = true;
+
+            if (isJumping)
+            {
+                rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
+                SoundManager.Instance.playSound("jumpSFX");
+                isJumping = false;
+            }
+
             // 땅에 닿아있을 때
             if (rayHit.distance < 0.5F)
             {
                 // 기본적으로는 닿아있는 모션 출력
                 animator.SetBool("isJumping", false);
-
-                // 점프 가능
-                if (Input.GetKeyDown(KeyCode.Space))
-                {
-                    rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
-                    SoundManager.Instance.playSound("jumpSFX");
-                }
             }
             else // 땅에서 떨어졌다면 점프 모션
             {
                 animator.SetBool("isJumping", true);
+                canJump = false;
             }
+        }
+        else
+        {
+            canJump = false;
         }
     }
 

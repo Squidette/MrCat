@@ -23,36 +23,25 @@ public class HookMove : MonoBehaviour
         Cancel();
     }
 
-    void Update()
+    void FixedUpdate()
     {
-        // 갈고리 던지는 조건
-        if (user.GetComponent<Animator>().GetBool("isJumping") && !isThrown && !isHoldingRoof)
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                transform.position = user.transform.position;
-                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 1.0F);
-                isThrown = true;
-                SoundManager.Instance.playSound("throwSFX");
-            }
-        }
-
         if (isThrown)
         {
             // 던졌으나 아직 지붕에 걸리지 않았을 때
             if (!isHoldingRoof)
             {
                 // 오른쪽 위쪽으로 갈고리를 던진다!
-                transform.Translate(new Vector3(1.0F, 1.0F, 0.0F) * Time.deltaTime * hookSpeed);
+                transform.Translate(new Vector3(1.0F, 1.0F, 0.0F) * hookSpeed * 0.01F);
 
-                if (2 < transform.position.x/* || Input.GetKeyUp(KeyCode.Space)*/)
+                // 일정 거리 이상 던지면 취소
+                if (2 < transform.position.x)
                     Cancel();
             }
             // 던졌고, 지붕에 걸린 상태일 때
             else
             {
                 // 훅이 지붕에 걸린것처럼 보이게 하기 위해 지붕과 같은 속도로 옆으로 보내준다
-                transform.Translate(Vector3.left * Time.deltaTime * GameManager.platformSpeed);
+                transform.Translate(Vector3.left * GameManager.platformSpeed * 0.01F);
 
                 // 스윙을 시킨다 (Kinematic으로 바꾼후 위치조정을 통해 대충 스윙하는것처럼 보이게 한다)
                 float swingDipDistance = Mathf.Sqrt(userHookDistanceSquared - (transform.position.x - user.transform.position.x) * (transform.position.x - user.transform.position.x));
@@ -76,6 +65,21 @@ public class HookMove : MonoBehaviour
                     user.GetComponent<Rigidbody2D>().AddForce(Vector2.up * 17.0F, ForceMode2D.Impulse);
                     user.GetComponent<Animator>().SetTrigger("swingJump");
                 }
+            }
+        }
+    }
+
+    void Update()
+    {
+        // 갈고리 던지는 조건
+        if (user.GetComponent<Animator>().GetBool("isJumping") && !isThrown && !isHoldingRoof)
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                transform.position = user.transform.position;
+                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 1.0F);
+                isThrown = true;
+                SoundManager.Instance.playSound("throwSFX");
             }
         }
     }
